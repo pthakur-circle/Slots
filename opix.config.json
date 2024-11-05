@@ -1,0 +1,15 @@
+{
+    "recipientEmail": "pranjali.thakur@circle.com",
+    "coverageArgs": [],
+    "testArgs": [],
+    "buildArgs": [],
+    "opixTestDir": "test",
+    "testContracts": [
+      {
+        "subjectContractName": "Slots",
+        "subjectContractPath": "src/contracts/Slots.sol",
+        "testContractPath": "src/tests/OpixSlots.t.sol",
+        "testContractName": "SlotsTest"
+      }
+    ]
+}
