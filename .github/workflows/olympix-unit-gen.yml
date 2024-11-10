@@ -1,17 +1,19 @@
 name: Unit Test Generation Workflow
 on:
   pull_request:
-    types:
-      - closed
+    branches:
+      - main
       
 jobs:
   test-generation:
-    if: github.event.pull_request.merged == true && github.head_ref == 'main' && github.base_ref == 'opix-unit-test'
-    
     runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v3
+
+      - name: Remove all test files except OpixSlot.t.sol
+        run: |
+          find . -type f -name '*.t.sol' ! -name 'OpixSlot.t.sol' -exec rm {} +
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
