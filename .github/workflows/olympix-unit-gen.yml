@@ -21,7 +21,7 @@ jobs:
 
       - name: Remove all test files except OpixSlot.t.sol
         run: |
-          find . -type f -name '*.t.sol' ! -name 'OpixSlot.t.sol' -exec rm {} +
+          find . -name '*.t.sol' ! -name 'OpixSlot.t.sol' -delete
 
       - name: List files after removal
         run: |
