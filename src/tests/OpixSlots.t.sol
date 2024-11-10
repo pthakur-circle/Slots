@@ -228,4 +228,70 @@ contract SlotsTest is OlympixUnitTest("Slots") {
     
         vm.stopPrank();
     }
+
+    function test_overwriteTier_FailWhenNewTierIsInvalidDueToNumberOfWhitelistedSlots() public {
+        vm.startPrank(admin);
+    
+        slots.createTier(tier);
+    
+        ISlots.Tier memory newTier = ISlots.Tier({
+            id: "tier1",
+            price: 1 ether,
+            numberOfPublicSlots: 10,
+            numberOfWhitelistedSlots: 5,
+            numberOfReservedSlots: 0,
+            numberOfPublicSlotsOrdered: 0,
+            publicCapPerAddress: 5,
+            publicStartTime: 1,
+            publicEndTime: 100,
+            isActive: false,
+            nftAddress: address(0),
+            tokenId: 0
+        });
+    
+        vm.expectRevert(ISlots.NewTierInvalid.selector);
+        slots.overwriteTier(newTier, tier.id);
+    
+        vm.stopPrank();
+    }
+
+    function test_withdrawAdmin_FailWhenAmountIsZero() public {
+        vm.startPrank(admin);
+    
+        uint256 depositAmount = 1 ether;
+        vm.deal(address(slots), depositAmount);
+    
+        slots.withdrawAdmin(0);
+    
+        assertEq(admin.balance, depositAmount);
+        assertEq(address(slots).balance, 0);
+    
+        vm.stopPrank();
+    }
+
+    function test_setWhitelistActive_SuccessfulSetWhitelistActive() public {
+        vm.startPrank(admin);
+    
+        slots.createTier(tier);
+    
+        ISlots.WhitelistConfig memory config = ISlots.WhitelistConfig({
+            root: bytes32(uint256(1)),
+            whitelistStartTime: 1,
+            whitelistEndTime: 100,
+            numberOfWhitelistedSlotsOrdered: 0,
+            capPerAddress: 5,
+            isActive: false
+        });
+    
+        string memory whitelistId = "whitelist1";
+        uint256 totalNumberOfWhitelistedSlots = 10;
+        slots.addWhitelistConfig(tier.id, whitelistId, config, totalNumberOfWhitelistedSlots);
+    
+        slots.setWhitelistActive(tier.id, whitelistId, true);
+    
+        (bytes32 root, uint32 whitelistStartTime, uint32 whitelistEndTime, uint256 numberOfWhitelistedSlotsOrdered, uint256 capPerAddress, bool isActive) = slots.whitelists(tier.id, whitelistId);
+        assertTrue(isActive);
+    
+        vm.stopPrank();
+    }
 }
